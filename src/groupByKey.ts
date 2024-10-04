@@ -3,16 +3,19 @@ type GroupsMap<T> = {
 };
 
 export function groupByKey<T>(items: T[], key: keyof T): GroupsMap<T> {
-  return items.reduce((result, item) => {
-    const keyValue = item[key];
+  return items.reduce<GroupsMap<T>>((result, item) => {
+    if (!(key in item)) {
+      throw new Error(`Key "${String(key)}" does not exist on item.`);
+    }
 
+    const keyValue = item[key];
     const keyString = String(keyValue);
 
-    if (!result[keyString]) {
+    if (!(keyString in result)) {
       result[keyString] = [];
     }
     result[keyString].push(item);
 
     return result;
-  }, {} as GroupsMap<T>);
+  }, {});
 }
